@@ -1,3 +1,39 @@
+## Deployments having different versions of the updates
+
+* app.v1.deployment.yml
+* app.v2.deployment.yml
+* app.v3.deployment.yml
+
+### Initial application is launched using
+
+    kubectl create -f app.v1.deployment.yml --save-config
+
+    kubectl get all
+    # above command output
+    NAME                            READY   STATUS    RESTARTS   AGE
+    pod/node-app-85dcdf447c-hqt7x   1/1     Running   0          112s
+    pod/node-app-85dcdf447c-nzrf9   1/1     Running   0          112s
+
+    NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+    service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   71d
+
+    NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/node-app   2/2     2            2           114s
+
+    NAME                                  DESIRED   CURRENT   READY   AGE
+    replicaset.apps/node-app-85dcdf447c   2         2         2       113s
+
+### To port-forward
+
+    kubectl port-forward node-app-85dcdf447c-hqt7x 5001:8080
+
+### To update the appplication
+
+    kubectl apply -f app.v2.deployment.yml
+
+THe above command rollbacks new pods with app.v2 is created one by one.After successful creation of one pod then one of old pod is removed and this repeated until all desired nodes are created.So there zero downtime in the application.User will not find any downtime if we configured load-balancer
+
+
 ## Building Docker Images
 
 docker build -t <your username>/node-web-app:tag .
