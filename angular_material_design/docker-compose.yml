@@ -1,0 +1,17 @@
+version: "2.0"
+services:
+  angular_material_design:
+    image: node:12-slim
+    networks:
+      - frontend
+    ports:
+      - 4200:4200
+    volumes:
+      - ./:/app
+    command: sh /app/entry_script.sh
+    environment:
+    - PATH=/app/node_modules/.bin:$PATH
+    
+
+networks:
+  frontend:
