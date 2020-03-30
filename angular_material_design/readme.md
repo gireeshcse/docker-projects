@@ -74,3 +74,13 @@ Choose a prebuilt theme name, or "custom" for a custom theme: Indigo/Pink       
 * npm i highcharts-angular --save
 * npm i highcharts --save
 * npm i @angular/flex-layout @angular/cdk --save
+
+* Add the following module
+
+import { MatButtonModule } from '@angular/material/button';
+
+<button mat-raised-button color="primary">TEST</button>
+
+ng g c layouts/default --module=app.module.ts
+ng g m layouts/default
+ng g c modules/dashboard --module=app.module.ts

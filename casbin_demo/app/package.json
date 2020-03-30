@@ -17,8 +17,11 @@
   "author": "gireeshcse",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^4.0.1",
     "casbin": "^4.1.1",
+    "cookie-parser": "^1.4.5",
     "cross-env": "^7.0.2",
+    "csurf": "^1.11.0",
     "debug": "^4.1.1",
     "ejs": "^3.0.2",
     "express": "^4.17.1",

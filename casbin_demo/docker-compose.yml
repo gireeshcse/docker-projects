@@ -1,4 +1,4 @@
-version: "3.3"
+version: "2.0"
 services:
   app-casbin:
     image: node:12-slim
@@ -22,9 +22,9 @@ services:
     ports:
       - 27000:27017
     environment:
+      MONGO_INITDB_DATABASE: casbin
       MONGO_INITDB_ROOT_USERNAME: mongoadmin
       MONGO_INITDB_ROOT_PASSWORD: pass123 
-      MONGO_INITDB_DATABASE: casbin
 
 networks:
   backend:

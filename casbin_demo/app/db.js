@@ -1,8 +1,15 @@
 var mongoose = require('mongoose');
-var User = require('./models/user');
-mongoose.connect(process.env.MONGODB_CONNECTION_URL, {useNewUrlParser: true,useUnifiedTopology: true});
+
+mongoose.connect(process.env.MONGODB_CONNECTION_URL,
+   {
+     useNewUrlParser: true,
+     useUnifiedTopology: true,
+     autoIndex: process.env.MONGODB_AUTO_INDEX
+    }
+);
 
 var db = mongoose.connection;
+
 
 db.on('error', console.error.bind(console, 'connection error:'));
 

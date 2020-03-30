@@ -3,6 +3,9 @@ var express = require('express');
 var path = require('path');
 const bodyParser = require('body-parser');
 
+const csrf = require('csurf');
+const cookieParser = require('cookie-parser');
+
 var env = require('node-env-file');
 var env_file = process.env.NODE_ENV || 'development';
 env(__dirname + '/.env.'+env_file); //Load from file
@@ -11,6 +14,14 @@ var morgan = require('morgan'); // HTTP request logger
 morgan('dev');
 
 var app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(bodyParser.json());
+// setup route middlewares
+var csrfProtection = csrf({ cookie: true })
+app.use(cookieParser());
+app.use(csrfProtection);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -20,10 +31,7 @@ var db = require('./db');
 var indexRouter = require('./routes/index');
 
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
-app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, '/assets')));
 
@@ -45,7 +53,7 @@ app.use(function(err, req, res, next) {
 
     // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.render('pages/error',{title:'Error Page'});
 });
 
 module.exports = app;
