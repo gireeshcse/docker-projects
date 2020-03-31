@@ -1,8 +1,10 @@
 var express = require('express');
 var router = express.Router();
-const bcrypt = require('bcrypt');
 var User = require('../models/user');
 var os = require('os');
+var cookie = require('cookie');
+var auth = {flag:false,data:null};
+
 var info = { 
   hostname: os.hostname(),
   networkInterfaces: os.networkInterfaces(),
@@ -18,23 +20,71 @@ router.use(function(req,res,next){
   (req.connection.socket ? req.connection.socket.remoteAddress : null);
   next();
 });
+
+router.use(function(req,res,next){
+if(req.cookies.name !== undefined)
+{
+  var decoded = User.verifyToken(req.cookies.name);
+  if(decoded !== false)
+  {
+    auth.flag = true;
+    auth.data = decoded;
+  }
+}else{
+  //if this is not set the data of previous values are retained 
+  auth.flag = false;
+  auth.data = null;
+}
+console.log('Auth Data');
+console.log(auth);
+next();
+});
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  
-  res.render('pages/index', { title: 'Casbin Demo App' , info : info });
+   // Cookies that have not been signed
+  console.log('Cookies: ', req.cookies)
+ 
+  // Cookies that have been signed
+  console.log('Signed Cookies: ', req.signedCookies)
+  res.render('pages/index', { title: 'Casbin Demo App' , info : info, auth_data:auth.data });
 });
 
 router.get('/login', function(req, res, next) {
+  if(auth.flag)
+  {
+      res.statusCode = 302;
+      console.log(req.headers.referer);
+      if(req.headers.referer.endsWith('/login'))
+      req.headers.referer = '/';
+      res.setHeader('Location', req.headers.referer || '/');
+      res.end();
+      return;
+  }
   res.render('pages/login', { title: 'Casbin Demo App::Login App',token :req.csrfToken() });
 });
 
-router.post('/login', function(req, res, next) {
+router.post('/login', async function(req, res, next) {
   console.log(req.body);
-  if(bcrypt.compareSync(req.body.password, hash)) {
-    // Passwords match
-   } else {
-    // Passwords don't match
-   }
+  var user = await User.findByEmail(req.body.email);
+  console.log(user);
+  if(user)
+  {
+    if(user.verifyPassword(req.body.password))
+    {
+      res.setHeader('Set-Cookie', cookie.serialize('name', String(user.generateToken()), {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 7 // 1 week
+      }));
+   
+      // Redirect back after setting cookie
+      res.statusCode = 302;
+      res.setHeader('Location', req.headers.referer || '/');
+      res.end();
+      return;
+    }
+  }
+  
+  
   res.render('pages/login', { title: 'Casbin Demo App::Login App',token :req.csrfToken(),error:'Invalid Username' });
 });
 
@@ -42,13 +92,12 @@ router.get('/register', function(req, res, next) {
   res.render('pages/register', { title: 'Casbin Demo App::Register',token :req.csrfToken() });
 });
 router.post('/register', function(req, res, next) {
-  req.body.password  =  bcrypt.hashSync(req.body.password, 10);//hashing password
   var userModel = new User();
   userModel.username = req.body.email;
   userModel.email = req.body.email;
   userModel.firstname = req.body.firstname;
-  userModel.lasttname = req.body.lastname;
-  userModel.password = req.body.password;
+  userModel.lastname = req.body.lastname;
+  userModel.password = User.generatePassword(req.body.password);
   userModel.save(function(err){
     if(err)
     {
@@ -63,6 +112,14 @@ router.post('/register', function(req, res, next) {
   });
 
   
+});
+
+router.get('/logout',function(req,res,next){
+      res.clearCookie("name");
+      res.statusCode = 302;
+      res.setHeader('Location', req.headers.referer || '/');
+      res.end();
+      return;
 });
 
 

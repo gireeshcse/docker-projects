@@ -7,6 +7,9 @@
     <%- include('../partials/nav.ejs') %>
     <div class="container" style="text-align: center;">
       <br><br><br><br><br>
+      <% if(typeof auth_data !== 'undefined' && auth_data != null) { %>
+        <p>Hello <strong><%= auth_data.name %>!</strong></p>
+      <% } %>
       <p>Welcome to Casbin Demo App</p>
       <br><br><br><br><br>
 
