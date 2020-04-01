@@ -27,6 +27,7 @@ app.set('view engine', 'ejs');
 
 var db = require('./db');
 var indexRouter = require('./routes/index');
+var userRouter = require('./routes/user');
 
 
 
@@ -35,6 +36,7 @@ app.use(express.static(path.join(__dirname, '/assets')));
 
 
 app.use('/', indexRouter);
+app.use('/user', userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
