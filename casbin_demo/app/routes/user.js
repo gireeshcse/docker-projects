@@ -41,7 +41,7 @@ router.get('/',async function(req,res,next){
 
 // View all Users List
 router.get('/users',async function(req,res,next){
-    var access = await enforcer.checkAuthorization(req.auth.data.email,'users','read');
+    var access = await enforcer.checkAccess(req.auth.data.email,'users','read');
     console.log(access);
     if(access)
     {
@@ -50,6 +50,26 @@ router.get('/users',async function(req,res,next){
     }else{
         res.render('user/denied',{title: 'Access Denied Page',auth_data:req.auth.data});
     }
+});
+
+// View Profile
+router.get('/edit',async function(req,res,next){
+
+    var user = await User.findOne({email:req.auth.data.email});
+    if(user)
+    {
+        var obj = {resource:'profile',owner:user.email};
+        var access = await enforcer.editProfile(req.auth.data.email,obj,'edit');
+        console.log(access);
+        if(access)
+        {
+            res.render('user/edit',{title: 'Edit Profile Page',user:user,auth_data:req.auth.data});
+        }else{
+            res.render('user/denied',{title: 'Access Denied Page',auth_data:req.auth.data});
+        }
+    }
+
+    
 });
 
 module.exports = router;

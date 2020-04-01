@@ -10,7 +10,7 @@
       <% if(typeof auth_data !== 'undefined' && auth_data != null) { %>
         <p>Hello <strong><%= auth_data.name %>!</strong></p>
       <% } %>
-      <p>Welcome to Casbin Demo::User Profile Page</p>
+      <p>Welcome to Casbin Demo::User Edit Profile Page</p>
     <table class="table">
         <tr>
             <td>Username</td>
@@ -31,11 +31,6 @@
         <tr>
             <td>Account Creation Date </td>
             <td> <%- user.createdAt %> </td>
-        </tr>
-        <tr>
-            <td colspan="2" style="text-align: center;">
-                <a href="/user/edit" class="btn btn-primary">EDIT</a>
-            </td>
         </tr>
     
     </table>
