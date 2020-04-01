@@ -4,6 +4,8 @@ var User = require('../models/user');
 var os = require('os');
 var cookie = require('cookie');
 var auth = {flag:false,data:null};
+const csrf = require('csurf');
+var csrfProtection = csrf({ cookie: true })
 
 var info = { 
   hostname: os.hostname(),
@@ -60,7 +62,8 @@ router.get('/login', function(req, res, next) {
       res.end();
       return;
   }
-  res.render('pages/login', { title: 'Casbin Demo App::Login App',token :req.csrfToken() });
+  //req.csrfToken()
+  res.render('pages/login', { title: 'Casbin Demo App::Login App',token : ''});
 });
 
 router.post('/login', async function(req, res, next) {
@@ -88,10 +91,10 @@ router.post('/login', async function(req, res, next) {
   res.render('pages/login', { title: 'Casbin Demo App::Login App',token :req.csrfToken(),error:'Invalid Username' });
 });
 
-router.get('/register', function(req, res, next) {
+router.get('/register',csrfProtection, function(req, res, next) {
   res.render('pages/register', { title: 'Casbin Demo App::Register',token :req.csrfToken() });
 });
-router.post('/register', function(req, res, next) {
+router.post('/register',csrfProtection, function(req, res, next) {
   var userModel = new User();
   userModel.username = req.body.email;
   userModel.email = req.body.email;

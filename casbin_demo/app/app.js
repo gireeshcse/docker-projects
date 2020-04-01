@@ -3,7 +3,6 @@ var express = require('express');
 var path = require('path');
 const bodyParser = require('body-parser');
 
-const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
 
 var env = require('node-env-file');
@@ -19,9 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(bodyParser.json());
 // setup route middlewares
-var csrfProtection = csrf({ cookie: true })
+
 app.use(cookieParser());
-app.use(csrfProtection);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
